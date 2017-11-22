@@ -1,29 +1,30 @@
 // Part 1
-function rayCast1(set, ray){
+function rayCast1(set, ray) {
     var result = set.intersect(ray);
-    if(result.geometry){
+    if (result.geometry) {
         return result.geometry.material.diffuse;
-    }else
-        return Color.black;
-}
-// Part 2
-function rayCast2(set, ray, light){
-    var result = set.intersect(ray);
-    if(result.geometry){
-        // Add shadows for extra credits
-        var rayToLight = new Ray(result.position, light.location.subtract(result.position));
-        var shadowResult = set.intersect(rayToLight);
-        if(shadowResult.geometry && shadowOn){
-            var color = result.geometry.material.ambient.modulate(light.ambient);
-        } else{
-            var color = result.geometry.material.blinnPhong(ray, result.position, result.normal, light);
-        }
-        return color;
-    }else
+    } else
         return Color.black;
 }
 
-function init(){
+// Part 2
+function rayCast2(set, ray, light) {
+    var result = set.intersect(ray);
+    if (result.geometry) {
+        // Add shadows for extra credits
+        var rayToLight = new Ray(result.position, light.location.subtract(result.position));
+        var shadowResult = set.intersect(rayToLight);
+        if (shadowResult.geometry && shadowOn) {
+            var color = result.geometry.material.ambient.modulate(light.ambient);
+        } else {
+            var color = result.geometry.material.blinnPhong(ray, result.position, result.normal, light);
+        }
+        return color;
+    } else
+        return Color.black;
+}
+
+function init() {
 
     // Get elements from HTML
     var renderSpheres = document.getElementById("renderSphere");
@@ -41,7 +42,7 @@ function init(){
     lights = [];
     shadowOn = false;
 
-    if(renderSpheres.checked){
+    if (renderSpheres.checked) {
         // Read spheres
         var spheres = getInputSpheres();
         for (var i in spheres) {
@@ -53,23 +54,23 @@ function init(){
     }
 
 
-    if(fixedLight.checked){
+    if (fixedLight.checked) {
         // Read original light
         var light1 = new Light(new Vector(-1, 3, -0.5), new Color(1, 1, 1), new Color(1, 1, 1), new Color(1, 1, 1));
         lights.push(light1);
     }
 
-    if(importLight.checked){
+    if (importLight.checked) {
         // Read extra lights
         var lightSet = getInputLights();
-        for (var l in lightSet){
+        for (var l in lightSet) {
             var temp = lightSet[l];
             var light = new Light(new Vector(temp.x, temp.y, temp.z), arrayToColor(temp.ambient), arrayToColor(temp.diffuse), arrayToColor(temp.specular));
             lights.push(light);
         }
     }
 
-    if(shadow.checked){
+    if (shadow.checked) {
         shadowOn = true;
     }
 
@@ -81,7 +82,8 @@ function init(){
 
 var y;
 var interval;
-function render(){
+
+function render() {
     var canvas = document.getElementById("viewport");
     var ctx = canvas.getContext("2d");
 
@@ -90,21 +92,21 @@ function render(){
 
     var sy = 1 - y / h;
     var i = 0;
-    imgData = ctx.createImageData(w,1);
+    imgData = ctx.createImageData(w, 1);
     var pixels = imgData.data;
-    for(var x = 0; x < w; x++){
+    for (var x = 0; x < w; x++) {
         var sx = x / w;
         var ray = view.generateRay(sx, sy);
         color = Color.black;
         // Part1 for no illumination
-        if(lights.length == 0)
-            color = color.add( rayCast1(set, ray) );
-        else{
+        if (lights.length == 0)
+            color = color.add(rayCast1(set, ray));
+        else {
             // Part2 for Blinn Phong illumination
-            for( var j in lights ){
+            for (var j in lights) {
                 var light = lights[j];
                 // Illuminate
-                color = color.add( rayCast2(set, ray, light) );
+                color = color.add(rayCast2(set, ray, light));
             }
         }
         pixels[i++] = color.r * 255;
@@ -113,7 +115,7 @@ function render(){
         pixels[i++] = 255;
     }
     ctx.putImageData(imgData, 0, y);
-    if(y == h){
+    if (y == h) {
         interval = window.clearInterval(interval);
         imgData = ctx.getImageData(0, 0, w, h);
         ctx.putImageData(imgData, 0, 0);
@@ -121,53 +123,31 @@ function render(){
     y++;
 }
 
-function run(){
+function run() {
     y = 0;
     var width = 600;
     var height = 600;
     init();
-    interval = self.setInterval("render()",0);
+    interval = self.setInterval("render()", 0);
 }
 
-// get the input ellipsoids from the standard class URL
+// get the input spheres from the standard class URL
 function getInputSpheres() {
-    const INPUT_SPHERES_URL =
-        "SpheresData.json";
 
-    // load the ellipsoids file
-    var httpReq = new XMLHttpRequest(); // a new http request
-    httpReq.open("GET",INPUT_SPHERES_URL,false); // init the request
-    httpReq.send(null); // send the request
-    var startTime = Date.now();
-    while ((httpReq.status !== 200) && (httpReq.readyState !== XMLHttpRequest.DONE)) {
-        if ((Date.now()-startTime) > 3000)
-            break;
-    } // until its loaded or we time out after three seconds
-    if ((httpReq.status !== 200) || (httpReq.readyState !== XMLHttpRequest.DONE)) {
-        console.log("Unable to open input ellipses file!");
-        return String.null;
-    } else
-        return JSON.parse(httpReq.response);
+   // define the json data of spheres
+    var s =
+        '[{"x": 0.65, "y": 0.75, "z": 0.3, "a":0.2, "b":0.2, "c":0.2, "ambient": [0.1,0.1,0.1], "diffuse": [0.0,0.0,0.6], "specular": [0.3,0.3,0.3], "n":5}, ' +
+        '{"x": 0.55, "y": 0.15, "z": 0.5, "a":0.4, "b":0.4, "c":0.4, "ambient": [0.1,0.1,0.1], "diffuse": [0.6,0.0,0.6], "specular": [0.3,0.3,0.3], "n":10}]';
+    // load the sphere data
+    return JSON.parse(s);
 }
 
-// get the input lights from the standard class URL
+// get the input lights from json data
 function getInputLights() {
-    const INPUT_ELLIPSOIDS_URL =
-        "Lights.json";
 
-    // load the lights file
-    var httpReq = new XMLHttpRequest(); // a new http request
-    httpReq.open("GET",INPUT_ELLIPSOIDS_URL,false); // init the request
-    httpReq.send(null); // send the request
-    var startTime = Date.now();
-    while ((httpReq.status !== 200) && (httpReq.readyState !== XMLHttpRequest.DONE)) {
-        if ((Date.now()-startTime) > 3000)
-            break;
-    } // until its loaded or we time out after three seconds
-    if ((httpReq.status !== 200) || (httpReq.readyState !== XMLHttpRequest.DONE)) {
-        console.log("Unable to open input ellipses file!");
-        return String.null;
-    } else
-        return JSON.parse(httpReq.response);
+    // define the json data of light
+    var l = '[{"x": 2, "y": 2, "z": -0.5, "ambient": [1,1,1], "diffuse": [1,1,1], "specular": [1,1,1]}]';
+    // load the lights data
+    return JSON.parse(l);
 }
 
