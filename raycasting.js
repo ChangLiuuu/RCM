@@ -153,7 +153,7 @@ function getInputSpheres() {
 // get the input lights from the standard class URL
 function getInputLights() {
     const INPUT_ELLIPSOIDS_URL =
-        "lights.json";
+        "Lights.json";
 
     // load the lights file
     var httpReq = new XMLHttpRequest(); // a new http request
