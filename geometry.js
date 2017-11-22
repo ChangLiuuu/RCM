@@ -61,60 +61,9 @@ class Sphere {
 }
 
 
-class Triangle {
-    // Triangle constructor
-    // a,b,c are vertices
-    constructor(a, b, c) {
-        this.a = a; // v0
-        this.b = b; // v1
-        this.c = c; // v2
-        var ab = this.b.subtract(this.a);
-        var ac = this.c.subtract(this.a);
-        this.N = ab.cross(ac).normalize();
-        this.D = this.N.dot(this.a);
-    }
-
-    intersect(ray){
-
-        // check whether ray is parallel to triangle
-        if(ray.direction.dot(this.N) == 0) return Intersection.none;
-
-        var t = (this.D-(this.N.dot(ray.origin)))/this.N.dot(ray.direction);
-        //console.log(t);
-        if(t > 0){
-            var result = new Intersection();
-            result.geometry = this;
-            result.distance = t;
-            result.position = ray.getPoint(result.distance);
-
-            var c;
-
-            // ab
-            var ab = this.b.subtract(this.a);
-            var pa = result.position.subtract(this.a);
-            c = ab.cross(pa);
-            if (this.N.dot(c) < 0) return Intersection.none;
-
-            // bc
-            var bc = this.c.subtract(this.b);
-            var pb = result.position.subtract(this.b);
-            c = bc.cross(pb);
-            if (this.N.dot(c) < 0) return Intersection.none;
-
-            // ca
-            var ca = this.a.subtract(this.c);
-            var pc = result.position.subtract(this.c);
-            c = ca.cross(pc);
-            if (this.N.dot(c) < 0) return Intersection.none;
-
-            result.normal = this.N;
-            return result;
-        }else return Intersection.none;
-    }
-}
 
 class GeometrySet{
-    // Triangle constructor
+    // Geometry constructor
     constructor() {
         this.geometries = [];
     }

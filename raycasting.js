@@ -26,14 +26,12 @@ function rayCast2(set, ray, light){
 function init(){
 
     // Get elements from HTML
-    var renderShperes = document.getElementById("renderShpere");
-    var renderTriangle = document.getElementById("renderTriangle");
+    var renderSpheres = document.getElementById("renderSphere");
     var fixedLight = document.getElementById("fixedLight");
     var importLight = document.getElementById("importLight");
     var shadow = document.getElementById("shadow");
 
     console.log(renderSpheres.checked);
-    console.log(renderTriangle.checked);
     console.log(fixedLight.checked);
     console.log(importLight.checked);
     console.log(shadow.checked);
@@ -43,37 +41,17 @@ function init(){
     lights = [];
     shadowOn = false;
 
-    if(renderEllipsoid.checked){
-        // Read ellipsoids
-        var ellipsoids = getInputEllipsoids();
-        for (var i in ellipsoids){
-            var temp = ellipsoids[i];
-            var ellipsoid = new Ellipsoid(new Vector(temp.x, temp.y, temp.z), temp.a, temp.b, temp.c);
-            ellipsoid.material = new Material(arrayToColor(temp.ambient), arrayToColor(temp.diffuse), arrayToColor(temp.specular), temp.n);
-            set.add(ellipsoid);
+    if(renderSpheres.checked){
+        // Read spheres
+        var spheres = getInputSpheres();
+        for (var i in spheres) {
+            var temp = spheres[i];
+            var sphere = new Sphere(new Vector(temp.x, temp.y, temp.z), temp.a, temp.b, temp.c);
+            sphere.material = new Material(arrayToColor(temp.ambient), arrayToColor(temp.diffuse), arrayToColor(temp.specular), temp.n);
+            set.add(sphere);
         }
     }
 
-    if(renderTriangle.checked){
-        // Read triangles
-        var vertices = [];
-        var triangles = getInputTriangles();
-
-        for( var v in triangles[1].vertices ){
-            vertices.push(arrayToVector(triangles[1].vertices[v]));
-        }
-
-        var m = triangles[0].material;
-        var triangleMaterial = new Material(arrayToColor(m.ambient), arrayToColor(m.diffuse), arrayToColor(m.specular), m.n);
-
-        for( var t in triangles[2].triangles){
-            var temp = triangles[2].triangles[t];
-            // Assuming each triangle has same material!
-            var triangle = new Triangle(vertices[temp[0]],vertices[temp[1]],vertices[temp[2]]);
-            triangle.material = triangleMaterial;
-            set.add(triangle);
-        }
-    }
 
     if(fixedLight.checked){
         // Read original light
@@ -152,13 +130,13 @@ function run(){
 }
 
 // get the input ellipsoids from the standard class URL
-function getInputEllipsoids() {
-    const INPUT_ELLIPSOIDS_URL =
-        "EllipseData.json";
+function getInputSpheres() {
+    const INPUT_SPHERES_URL =
+        "SpheresData.json";
 
     // load the ellipsoids file
     var httpReq = new XMLHttpRequest(); // a new http request
-    httpReq.open("GET",INPUT_ELLIPSOIDS_URL,false); // init the request
+    httpReq.open("GET",INPUT_SPHERES_URL,false); // init the request
     httpReq.send(null); // send the request
     var startTime = Date.now();
     while ((httpReq.status !== 200) && (httpReq.readyState !== XMLHttpRequest.DONE)) {
@@ -193,23 +171,3 @@ function getInputLights() {
         return JSON.parse(httpReq.response);
 }
 
-// get the input triangless from the standard class URL
-function getInputTriangles() {
-    const INPUT_ELLIPSOIDS_URL =
-        "https://ncsucgclass.github.io/prog1/triangles.json";
-
-    // load the lights file
-    var httpReq = new XMLHttpRequest(); // a new http request
-    httpReq.open("GET",INPUT_ELLIPSOIDS_URL,false); // init the request
-    httpReq.send(null); // send the request
-    var startTime = Date.now();
-    while ((httpReq.status !== 200) && (httpReq.readyState !== XMLHttpRequest.DONE)) {
-        if ((Date.now()-startTime) > 3000)
-            break;
-    } // until its loaded or we time out after three seconds
-    if ((httpReq.status !== 200) || (httpReq.readyState !== XMLHttpRequest.DONE)) {
-        console.log("Unable to open input ellipses file!");
-        return String.null;
-    } else
-        return JSON.parse(httpReq.response);
-}
