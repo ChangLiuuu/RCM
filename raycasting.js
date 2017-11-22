@@ -26,13 +26,13 @@ function rayCast2(set, ray, light){
 function init(){
 
     // Get elements from HTML
-    var renderEllipsoid = document.getElementById("renderEllipsoid");
+    var renderShperes = document.getElementById("renderShpere");
     var renderTriangle = document.getElementById("renderTriangle");
     var fixedLight = document.getElementById("fixedLight");
     var importLight = document.getElementById("importLight");
     var shadow = document.getElementById("shadow");
 
-    console.log(renderEllipsoid.checked);
+    console.log(renderSpheres.checked);
     console.log(renderTriangle.checked);
     console.log(fixedLight.checked);
     console.log(importLight.checked);

@@ -12,7 +12,7 @@ class Intersection {
 // Constant representing no intersection
 Intersection.none = new Intersection();
 
-class Ellipsoid {
+class Sphere {
     // Ellipsoid constructor
     constructor(center, a, b, c) {
         this.center = center;
